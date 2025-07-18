@@ -9,13 +9,49 @@ use App\Http\Requests\PlaceRequest;
 class PlaceController extends Controller
 {
     /**
-     * Lista os lugares com filtros opcionais.
+     * @OA\Get(
+     *     path="/api/places",
+     *     tags={"Places"},
+     *     summary="Lista todos os lugares",
+     *     @OA\Parameter(
+     *         name="city",
+     *         in="query",
+     *         description="Filtra por cidade",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Filtra por tipo",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="name",
+     *         in="query",
+     *         description="Filtra por nome",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de lugares paginada",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="data", type="array",
+     *                 @OA\Items(ref="#/components/schemas/Place")
+     *             ),
+     *             @OA\Property(property="links", type="object"),
+     *             @OA\Property(property="meta", type="object")
+     *         )
+     *     )
+     * )
      */
     public function index(Request $request)
     {
         $query = Place::query();
 
-        // Filtros
         if ($request->has('city')) {
             $query->where('city', 'ilike', '%' . $request->city . '%');
         }
@@ -32,7 +68,20 @@ class PlaceController extends Controller
     }
 
     /**
-     * Cria um novo lugar.
+     * @OA\Post(
+     *     path="/api/places",
+     *     tags={"Places"},
+     *     summary="Cria um novo lugar",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/PlaceRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Lugar criado com sucesso",
+     *         @OA\JsonContent(ref="#/components/schemas/Place")
+     *     )
+     * )
      */
     public function store(PlaceRequest $request)
     {
@@ -41,7 +90,24 @@ class PlaceController extends Controller
     }
 
     /**
-     * Retorna os detalhes de um lugar específico.
+     * @OA\Get(
+     *     path="/api/places/{id}",
+     *     tags={"Places"},
+     *     summary="Mostra detalhes de um lugar específico",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID do lugar",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Detalhes do lugar",
+     *         @OA\JsonContent(ref="#/components/schemas/Place")
+     *     ),
+     *     @OA\Response(response=404, description="Lugar não encontrado")
+     * )
      */
     public function show(string $id)
     {
@@ -50,7 +116,28 @@ class PlaceController extends Controller
     }
 
     /**
-     * Atualiza os dados de um lugar.
+     * @OA\Put(
+     *     path="/api/places/{id}",
+     *     tags={"Places"},
+     *     summary="Atualiza um lugar",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID do lugar",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/PlaceRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lugar atualizado",
+     *         @OA\JsonContent(ref="#/components/schemas/Place")
+     *     ),
+     *     @OA\Response(response=404, description="Lugar não encontrado")
+     * )
      */
     public function update(PlaceRequest $request, string $id)
     {
@@ -61,7 +148,23 @@ class PlaceController extends Controller
     }
 
     /**
-     * Remove um lugar.
+     * @OA\Delete(
+     *     path="/api/places/{id}",
+     *     tags={"Places"},
+     *     summary="Remove um lugar",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID do lugar",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lugar removido com sucesso"
+     *     ),
+     *     @OA\Response(response=404, description="Lugar não encontrado")
+     * )
      */
     public function destroy(string $id)
     {
